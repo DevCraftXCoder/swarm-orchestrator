@@ -77,10 +77,33 @@ This lets the orchestrator chain agents reliably — each one gets exactly the c
 │   └── swarm.md                 # Entry point / slash command
 ├── rules/
 │   └── handoff-protocol.md      # Agent handoff format spec
+├── bin/
+│   └── install.js               # Auto-installs files into your project
+├── index.js                     # Programmatic access to file paths
 └── README.md
 ```
 
-## Setup
+## Installation
+
+### Package manager (recommended)
+
+```bash
+pnpm add swarm-orchestrator
+# or
+npm install swarm-orchestrator
+# or
+yarn add swarm-orchestrator
+```
+
+On install, the postinstall script automatically copies the agent, command, and handoff files into your project's `.claude/` directory (skips files that already exist).
+
+To re-run the installer manually:
+
+```bash
+npx swarm-install
+```
+
+### Manual
 
 Copy into your agent's config directory:
 
@@ -90,7 +113,7 @@ cp commands/swarm.md <your-commands-dir>/
 cp rules/handoff-protocol.md <your-rules-dir>/
 ```
 
-The files are framework-agnostic markdown. Any AI coding agent that can read instructions, spawn sub-agents, and collect results can use this pattern. Parse them into your orchestration layer however your tool expects.
+The files are framework-agnostic markdown. Any AI coding agent that can read instructions, spawn sub-agents, and collect results can use this pattern.
 
 ## Customization
 

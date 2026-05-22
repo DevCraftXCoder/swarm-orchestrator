@@ -1,0 +1,39 @@
+{
+  "name": "swarm-orchestrator",
+  "version": "1.0.0",
+  "description": "Meta-orchestrator for AI coding agents — analyzes tasks, picks agents, dispatches swarms, collects handoffs",
+  "main": "index.js",
+  "bin": {
+    "swarm-install": "bin/install.js"
+  },
+  "scripts": {
+    "postinstall": "node bin/install.js"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "orchestrator",
+    "swarm",
+    "multi-agent",
+    "coding-agent",
+    "claude-code",
+    "cursor",
+    "windsurf",
+    "cline"
+  ],
+  "author": "DevCraftXCoder",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DevCraftXCoder/swarm-orchestrator.git"
+  },
+  "files": [
+    "agents/",
+    "commands/",
+    "rules/",
+    "bin/",
+    "index.js",
+    "README.md",
+    "LICENSE"
+  ]
+}
