@@ -32,7 +32,7 @@ Surface any blockers before dispatching.
 
 ## Agent Roster
 
-> **Customize this section.** Replace these example agents with your own `.claude/agents/` definitions.
+> **Customize this section.** Replace these example agents with your own agent definitions.
 
 ### Backend
 | Agent | Domain | Model |

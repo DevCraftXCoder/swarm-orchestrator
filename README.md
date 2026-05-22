@@ -1,59 +1,37 @@
-# Swarm Orchestrator for Claude Code
+# Swarm Orchestrator
 
-A meta-orchestrator agent for [Claude Code](https://claude.ai/code) that analyzes tasks, selects optimal agent(s) from your roster, determines execution topology, dispatches the swarm, and delivers a unified result.
+A meta-orchestration pattern for AI coding agents. Analyzes tasks, selects optimal agent(s), determines execution topology, dispatches the swarm, and delivers a unified result.
 
-## What It Does
+Works with any AI coding agent that supports multi-agent dispatch.
 
-Instead of manually picking which agent to run, `/swarm <task>` figures it out for you:
+## The Problem
 
-1. **Routes** — matches file paths and keywords to the right agent(s)
-2. **Prioritizes** — classifies urgency (P0 incident → P3 polish)
-3. **Topologies** — picks SINGLE / PARALLEL / CHAIN / FAN-OUT based on task shape
-4. **Dispatches** — spawns agents with focused, scoped prompts
-5. **Collects** — gathers handoff reports, resolves failures
-6. **Quality gates** — runs typecheck/lint/build before reporting done
-7. **Deploys** — triggers the right deploy commands per changed service
+You have multiple specialized agents (backend, frontend, QA, security, ops). For every task, you manually decide:
+- Which agent(s) to use
+- Whether to run them in parallel or sequence
+- How to pass context between them
+- When to stop and report
 
-## Installation
-
-### 1. Copy the agent definition
-
-```bash
-cp agents/swarm-orchestrator.md .claude/agents/swarm-orchestrator.md
-```
-
-### 2. Copy the slash command
-
-```bash
-cp commands/swarm.md .claude/commands/swarm.md
-```
-
-### 3. (Optional) Copy the handoff protocol
-
-```bash
-cp rules/handoff-protocol.md .claude/rules/handoff-protocol.md
-```
-
-### 4. Customize
-
-Edit `swarm-orchestrator.md` to:
-- Replace the **Agent Roster** tables with your own agents
-- Replace the **File Path Routing** table with your repo's directory structure
-- Replace the **Quality Gate** and **Deploy** commands with your project's build/deploy steps
-- Remove or replace MCP memory references if you don't use a memory server
-
-## Usage
-
-```
-/swarm                                    # prompts for a task
-/swarm fix the login redirect bug         # P1 bug — single agent
-/swarm add user avatars to the feed       # P2 feature — chain
-/swarm full security audit before launch  # P3 audit — fan-out
-```
+**Swarm Orchestrator automates all of that.** Give it a task, it figures out the rest.
 
 ## How It Works
 
-### Execution Topology
+```
+You: "add user avatars to the feed"
+
+Swarm Orchestrator:
+  1. Analyzes → backend + frontend change (P2 feature)
+  2. Routes  → backend-expert + frontend-expert
+  3. Topology → CHAIN (API first, then UI)
+  4. Dispatches → backend-expert builds route
+  5. Collects  → handoff report, feeds to frontend-expert
+  6. Quality   → runs typecheck/lint/build
+  7. Reports   → unified result with all files changed
+```
+
+## Core Concepts
+
+### Execution Topologies
 
 | Topology | When | Example |
 |----------|------|---------|
@@ -71,69 +49,128 @@ Edit `swarm-orchestrator.md` to:
 | P2 — Feature | "add", "build", "new" | Chain or parallel, plan if complex |
 | P3 — Polish | "polish", "audit", "clean up" | Parallel swarm or fan-out |
 
-### Model Inheritance
+### Decision Engine (3-step routing)
 
-The agent has no `model:` in its frontmatter, so it inherits whatever model your Claude Code session is running — Haiku, Sonnet, or Opus. Your spawned sub-agents also inherit unless their own frontmatter specifies a model.
+1. **File path routing** — strongest signal. Map repo directories to agents.
+2. **Keyword classification** — fallback when no paths mentioned.
+3. **Priority override** — urgency changes topology (P0 = single agent, no planning).
 
-## File Structure
+### Handoff Protocol
+
+Every agent produces a structured handoff:
+
+```
+STATUS: DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_HANDOFF
+SUMMARY: what was accomplished
+FILES_CHANGED: list of modified files
+CONCERNS: issues found but not resolved
+```
+
+This lets the orchestrator chain agents reliably — each one gets exactly the context it needs from the previous.
+
+## Files
 
 ```
 ├── agents/
-│   └── swarm-orchestrator.md    # Agent definition (the brain)
+│   └── swarm-orchestrator.md    # The orchestrator brain (routing, topology, dispatch)
 ├── commands/
-│   └── swarm.md                 # Slash command (the entry point)
+│   └── swarm.md                 # Entry point / slash command
 ├── rules/
-│   └── handoff-protocol.md      # Handoff report format for agent chains
+│   └── handoff-protocol.md      # Agent handoff format spec
 └── README.md
 ```
 
-## Customization Guide
+## Setup
 
-### Adding Your Own Agents
+Copy into your agent's config directory:
 
-In `swarm-orchestrator.md`, replace the Agent Roster tables with your agents:
-
-```markdown
-### Your Domain
-| Agent | Domain | Model |
-|-------|--------|-------|
-| `your-agent-name` | What it does | Sonnet |
+```bash
+cp agents/swarm-orchestrator.md <your-agents-dir>/
+cp commands/swarm.md <your-commands-dir>/
+cp rules/handoff-protocol.md <your-rules-dir>/
 ```
 
-### Adding File Path Routes
+The files are framework-agnostic markdown. Any AI coding agent that can read instructions, spawn sub-agents, and collect results can use this pattern. Parse them into your orchestration layer however your tool expects.
 
-Replace the routing table with your project structure:
+## Customization
+
+### 1. Replace the Agent Roster
+
+Edit `swarm-orchestrator.md` and swap the example agents with yours:
+
+```markdown
+| Agent | Domain | Model |
+|-------|--------|-------|
+| `your-backend-agent` | API routes, database | default |
+| `your-frontend-agent` | UI components | default |
+| `your-qa-agent` | Tests, lint, build | default |
+```
+
+### 2. Replace File Path Routes
+
+Map your repo structure to agents:
 
 ```markdown
 | Path Pattern | Agent |
 |-------------|-------|
-| `src/frontend/` | `frontend-agent` |
-| `src/api/` | `backend-agent` |
-| `infrastructure/` | `ops-agent` |
+| `src/api/` | `your-backend-agent` |
+| `src/frontend/` | `your-frontend-agent` |
+| `infra/` | `your-ops-agent` |
 ```
 
-### Adding Deploy Steps
+### 3. Replace Quality Gate Commands
 
-Replace the deploy phase with your project's commands:
+```markdown
+| Files Changed | Verification Command |
+|--------------|---------------------|
+| `src/api/` | `npm run typecheck && npm test` |
+| `src/frontend/` | `npm run build` |
+```
+
+### 4. Replace Deploy Commands (optional)
 
 ```markdown
 | Files Changed | Deploy Command |
 |--------------|----------------|
 | `src/api/` | `npm run deploy:api` |
-| `src/frontend/` | `npm run deploy:frontend` |
 ```
 
 ## Constraints
 
-- Max 6 agents per swarm (prevents context exhaustion)
-- Always foreground — background agents can stall on permission gates
-- Chain topology uses fail-fast — stops on first BLOCKED status
-- Parallel agents must have non-overlapping file ownership
+- **Max 6 agents** per swarm (prevents context exhaustion)
+- **Always foreground** — background agents can stall on permission gates
+- **Fail-fast chains** — stops on first BLOCKED status
+- **No file overlap** in parallel — if two agents need the same file, downgrade to CHAIN
 
-## Requirements
+## Common Patterns
 
-- [Claude Code](https://claude.ai/code) CLI, desktop app, or IDE extension
-- At least one custom agent defined in `.claude/agents/`
+### Bug Fix
+```
+SINGLE: backend-expert → fix → quality gate
+```
+
+### Full-Stack Feature
+```
+CHAIN: backend-expert → frontend-expert → qa-agent → reviewer
+```
+
+### Security Audit
+```
+FAN-OUT: security-reviewer + dependency-auditor + qa-agent → synthesize
+```
+
+### Production Incident
+```
+SINGLE: ops-expert → diagnose + fix (no planning, no report)
+```
+
+## Design Principles
+
+- **File paths over keywords** — directory structure is the most reliable routing signal
+- **Fail-fast over retry** — stop chains early rather than compounding errors
+- **Scoped prompts** — each agent gets < 200 words, focused on its piece
+- **Quality gates are mandatory** — never skip typecheck/lint/build
+- **Model inheritance** — agents run on whatever model the session uses unless overridden
 
 ## License
 

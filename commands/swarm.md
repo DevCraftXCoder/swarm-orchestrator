@@ -61,5 +61,5 @@ Foreground only. No background agents. Hard cap: 6 agents per swarm.
 
 ## Related
 
-- Agent definition: `.claude/agents/swarm-orchestrator.md`
-- Handoff format: `.claude/rules/handoff-protocol.md`
+- Agent definition: `agents/swarm-orchestrator.md`
+- Handoff format: `rules/handoff-protocol.md`
