@@ -89,10 +89,6 @@ This lets the orchestrator chain agents reliably — each one gets exactly the c
 
 ```bash
 pnpm add swarm-orchestrator
-# or
-npm install swarm-orchestrator
-# or
-yarn add swarm-orchestrator
 ```
 
 On install, the postinstall script automatically copies the agent, command, and handoff files into your project's `.claude/` directory (skips files that already exist).
