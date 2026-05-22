@@ -222,8 +222,8 @@ Before reporting done, run appropriate checks:
 
 | Files Changed | Verification Command |
 |--------------|---------------------|
-| `src/api/` | `npm run typecheck && npm test` |
-| `src/frontend/` | `npm run build` |
+| `src/api/` | `pnpm run typecheck && npm test` |
+| `src/frontend/` | `pnpm run build` |
 | Any `.py` file | `python -m ruff check <file> && python -m pytest` |
 
 If quality gate fails -> fix or report. Never skip.
@@ -234,8 +234,8 @@ If quality gate fails -> fix or report. Never skip.
 
 | Files Changed | Deploy Command |
 |--------------|----------------|
-| `src/api/` | `npm run deploy:api` |
-| `src/frontend/` | `npm run deploy:frontend` |
+| `src/api/` | `pnpm run deploy:api` |
+| `src/frontend/` | `pnpm run deploy:frontend` |
 
 ### Phase 7: Final Handoff
 

@@ -96,7 +96,7 @@ On install, the postinstall script automatically copies the agent, command, and 
 To re-run the installer manually:
 
 ```bash
-npx swarm-install
+pnpx swarm-install
 ```
 
 ### Manual
@@ -142,8 +142,8 @@ Map your repo structure to agents:
 ```markdown
 | Files Changed | Verification Command |
 |--------------|---------------------|
-| `src/api/` | `npm run typecheck && npm test` |
-| `src/frontend/` | `npm run build` |
+| `src/api/` | `pnpm run typecheck && npm test` |
+| `src/frontend/` | `pnpm run build` |
 ```
 
 ### 4. Replace Deploy Commands (optional)
@@ -151,7 +151,7 @@ Map your repo structure to agents:
 ```markdown
 | Files Changed | Deploy Command |
 |--------------|----------------|
-| `src/api/` | `npm run deploy:api` |
+| `src/api/` | `pnpm run deploy:api` |
 ```
 
 ## Constraints
