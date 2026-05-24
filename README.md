@@ -1,8 +1,8 @@
 # Swarm Orchestrator
 
-A meta-orchestration pattern for AI coding agents. Analyzes tasks, selects optimal agent(s), determines execution topology, dispatches the swarm, and delivers a unified result.
+A meta-orchestration pattern for coding agents. Analyzes tasks, selects optimal agent(s), determines execution topology, dispatches the swarm, and delivers a unified result.
 
-Works with any AI coding agent that supports multi-agent dispatch.
+Works with any coding agent that supports multi-agent dispatch.
 
 ## The Problem
 
@@ -109,7 +109,7 @@ cp commands/swarm.md <your-commands-dir>/
 cp rules/handoff-protocol.md <your-rules-dir>/
 ```
 
-The files are framework-agnostic markdown. Any AI coding agent that can read instructions, spawn sub-agents, and collect results can use this pattern.
+The files are framework-agnostic markdown. Any coding agent that can read instructions, spawn sub-agents, and collect results can use this pattern.
 
 ## Customization
 
